@@ -2,8 +2,8 @@ package socs.network.node;
 
 import socs.network.util.Configuration;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.Socket;
 
 
 public class Router {
@@ -17,6 +17,7 @@ public class Router {
 
   public Router(Configuration config) {
     rd.simulatedIPAddress = config.getString("socs.network.router.ip");
+    rd.processPortNumber = config.getShort("socs.network.router.port");
     lsd = new LinkStateDatabase(rd);
   }
 
@@ -50,14 +51,25 @@ public class Router {
    */
   private void processAttach(String processIP, short processPort,
                              String simulatedIP, short weight) {
+    RouterDescription guestRD = new RouterDescription();
+    guestRD.processIPAddress = processIP;
+    guestRD.processPortNumber = processPort;
+    guestRD.simulatedIPAddress = simulatedIP;
+    Link templink = new Link(this.rd, guestRD);
+    ports[0] = templink;
 
   }
 
   /**
    * broadcast Hello to neighbors
    */
-  private void processStart() {
+  private void processStart() throws IOException {
 
+    Socket testClient = new Socket(ports[0].router2.processIPAddress,ports[0].router2.processPortNumber);
+    OutputStream outToServer = testClient.getOutputStream();
+    DataOutputStream out = new DataOutputStream(outToServer);
+    out.writeUTF("Hello from "+testClient.getLocalSocketAddress());
+    testClient.close();
   }
 
   /**
