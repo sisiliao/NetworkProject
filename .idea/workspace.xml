@@ -2,13 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6b61581d-7734-4d9d-a631-f1cd7c36f036" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/socs/network/node/ClientThread.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/router1.conf" beforeDir="false" afterPath="$PROJECT_DIR$/conf/router1.conf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/router2.conf" beforeDir="false" afterPath="$PROJECT_DIR$/conf/router2.conf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/socs/network/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/socs/network/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/socs/network/message/SOSPFPacket.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/socs/network/message/SOSPFPacket.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/socs/network/node/ConnectionThread.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/socs/network/node/Link.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/socs/network/node/Link.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/socs/network/node/Router.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/socs/network/node/Router.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/socs/network/node/ServerThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/socs/network/node/ServerThread.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/COMP535-1.0-SNAPSHOT-jar-with-dependencies.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/COMP535-1.0-SNAPSHOT-jar-with-dependencies.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/socs/network/message/SOSPFPacket.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/socs/network/message/SOSPFPacket.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/socs/network/node/ConnectionThread.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/socs/network/node/Link.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/socs/network/node/Link.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/socs/network/node/Router.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/socs/network/node/Router.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/socs/network/node/ServerThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/socs/network/node/ServerThread.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -331,7 +339,7 @@
       <workItem from="1580225293936" duration="459000" />
       <workItem from="1580225800650" duration="11888000" />
       <workItem from="1580508842333" duration="960000" />
-      <workItem from="1580509918509" duration="7475000" />
+      <workItem from="1580509918509" duration="19342000" />
     </task>
     <servers />
   </component>
@@ -349,10 +357,11 @@
     <state x="262" y="90" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1440.816@0.23.1440.816" timestamp="1580141073675" />
     <state x="-1571" y="120" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1920.1109/-1920.23.1920.1177@-1920.23.1920.1177" timestamp="1580184428486" />
     <state x="349" y="114" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1920.1109/-1920.23.1920.1177@0.23.1920.1109" timestamp="1580175748171" />
-    <state x="603" y="195" key="#com.intellij.ide.util.MemberChooser" timestamp="1580525546991">
-      <screen x="0" y="23" width="1440" height="826" />
+    <state x="603" y="195" key="#com.intellij.ide.util.MemberChooser" timestamp="1580693229293">
+      <screen x="0" y="23" width="1440" height="825" />
     </state>
     <state x="603" y="194" key="#com.intellij.ide.util.MemberChooser/0.23.1440.823@0.23.1440.823" timestamp="1580507521238" />
+    <state x="603" y="195" key="#com.intellij.ide.util.MemberChooser/0.23.1440.825@0.23.1440.825" timestamp="1580693229293" />
     <state x="603" y="195" key="#com.intellij.ide.util.MemberChooser/0.23.1440.826@0.23.1440.826" timestamp="1580525546991" />
     <state x="603" y="195" key="#com.intellij.ide.util.MemberChooser/0.23.1440.827@0.23.1440.827" timestamp="1580520929764" />
     <state x="-1116" y="268" key="#com.intellij.ide.util.MemberChooser/0.23.1920.1109/-1920.23.1920.1177@-1920.23.1920.1177" timestamp="1580184252390" />
@@ -369,31 +378,35 @@
       <screen x="-1920" y="23" width="1920" height="1177" />
     </state>
     <state x="-1250" y="488" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1920.1109/-1920.23.1920.1177@-1920.23.1920.1177" timestamp="1580226472521" />
-    <state width="1398" height="208" key="GridCell.Tab.0.bottom" timestamp="1580524094447">
-      <screen x="0" y="23" width="1440" height="826" />
+    <state width="1398" height="208" key="GridCell.Tab.0.bottom" timestamp="1580699075924">
+      <screen x="0" y="23" width="1440" height="823" />
     </state>
     <state width="679" height="248" key="GridCell.Tab.0.bottom/0.23.1440.816@0.23.1440.816" timestamp="1580141089399" />
+    <state width="1398" height="208" key="GridCell.Tab.0.bottom/0.23.1440.823@0.23.1440.823" timestamp="1580699075924" />
     <state width="1398" height="208" key="GridCell.Tab.0.bottom/0.23.1440.825@0.23.1440.825" timestamp="1580508589492" />
     <state width="1398" height="208" key="GridCell.Tab.0.bottom/0.23.1440.826@0.23.1440.826" timestamp="1580524094447" />
     <state width="1529" height="538" key="GridCell.Tab.0.bottom/0.23.1920.1109/-1920.23.1920.1177@-1920.23.1920.1177" timestamp="1580224727996" />
-    <state width="1398" height="208" key="GridCell.Tab.0.center" timestamp="1580524094446">
-      <screen x="0" y="23" width="1440" height="826" />
+    <state width="1398" height="208" key="GridCell.Tab.0.center" timestamp="1580699075922">
+      <screen x="0" y="23" width="1440" height="823" />
     </state>
     <state width="679" height="248" key="GridCell.Tab.0.center/0.23.1440.816@0.23.1440.816" timestamp="1580141089397" />
+    <state width="1398" height="208" key="GridCell.Tab.0.center/0.23.1440.823@0.23.1440.823" timestamp="1580699075922" />
     <state width="1398" height="208" key="GridCell.Tab.0.center/0.23.1440.825@0.23.1440.825" timestamp="1580508589490" />
     <state width="1398" height="208" key="GridCell.Tab.0.center/0.23.1440.826@0.23.1440.826" timestamp="1580524094446" />
     <state width="1529" height="538" key="GridCell.Tab.0.center/0.23.1920.1109/-1920.23.1920.1177@-1920.23.1920.1177" timestamp="1580224727995" />
-    <state width="1398" height="208" key="GridCell.Tab.0.left" timestamp="1580524094445">
-      <screen x="0" y="23" width="1440" height="826" />
+    <state width="1398" height="208" key="GridCell.Tab.0.left" timestamp="1580699075920">
+      <screen x="0" y="23" width="1440" height="823" />
     </state>
     <state width="679" height="248" key="GridCell.Tab.0.left/0.23.1440.816@0.23.1440.816" timestamp="1580141089396" />
+    <state width="1398" height="208" key="GridCell.Tab.0.left/0.23.1440.823@0.23.1440.823" timestamp="1580699075920" />
     <state width="1398" height="208" key="GridCell.Tab.0.left/0.23.1440.825@0.23.1440.825" timestamp="1580508589489" />
     <state width="1398" height="208" key="GridCell.Tab.0.left/0.23.1440.826@0.23.1440.826" timestamp="1580524094445" />
     <state width="1529" height="538" key="GridCell.Tab.0.left/0.23.1920.1109/-1920.23.1920.1177@-1920.23.1920.1177" timestamp="1580224727995" />
-    <state width="1398" height="208" key="GridCell.Tab.0.right" timestamp="1580524094447">
-      <screen x="0" y="23" width="1440" height="826" />
+    <state width="1398" height="208" key="GridCell.Tab.0.right" timestamp="1580699075923">
+      <screen x="0" y="23" width="1440" height="823" />
     </state>
     <state width="679" height="248" key="GridCell.Tab.0.right/0.23.1440.816@0.23.1440.816" timestamp="1580141089398" />
+    <state width="1398" height="208" key="GridCell.Tab.0.right/0.23.1440.823@0.23.1440.823" timestamp="1580699075923" />
     <state width="1398" height="208" key="GridCell.Tab.0.right/0.23.1440.825@0.23.1440.825" timestamp="1580508589491" />
     <state width="1398" height="208" key="GridCell.Tab.0.right/0.23.1440.826@0.23.1440.826" timestamp="1580524094447" />
     <state width="1529" height="538" key="GridCell.Tab.0.right/0.23.1920.1109/-1920.23.1920.1177@-1920.23.1920.1177" timestamp="1580224727996" />

@@ -1,4 +1,5 @@
 socs/network/Main.class
+socs/network/node/ClientThread.class
 socs/network/message/SOSPFPacket.class
 socs/network/node/LinkStateDatabase.class
 socs/network/message/LinkDescription.class
@@ -9,4 +10,3 @@ socs/network/util/Configuration.class
 socs/network/message/LSA.class
 socs/network/node/Link.class
 socs/network/node/RouterStatus.class
-socs/network/node/ConnectionThread.class

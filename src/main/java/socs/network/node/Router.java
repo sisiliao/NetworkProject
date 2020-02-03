@@ -1,5 +1,6 @@
 package socs.network.node;
 
+import socs.network.message.SOSPFPacket;
 import socs.network.util.Configuration;
 
 import java.io.*;
@@ -19,6 +20,16 @@ public class Router {
     rd.simulatedIPAddress = config.getString("socs.network.router.ip");
     rd.processPortNumber = config.getShort("socs.network.router.port");
     lsd = new LinkStateDatabase(rd);
+  }
+
+  public void setRouterStatus(RouterStatus rs){
+    System.out.println("set "+rd.simulatedIPAddress+" state to "+rs.toString()+";\n");
+    rd.status = rs;
+  }
+
+  public void addAttach(String processIP, short processPort,
+                        String simulatedIP){
+    processAttach(processIP,processPort,simulatedIP,(short)0);
   }
 
   /**
@@ -63,13 +74,34 @@ public class Router {
   /**
    * broadcast Hello to neighbors
    */
-  private void processStart() throws IOException {
+  private void processStart() {
 
-    Socket testClient = new Socket(ports[0].router2.processIPAddress,ports[0].router2.processPortNumber);
-    OutputStream outToServer = testClient.getOutputStream();
-    DataOutputStream out = new DataOutputStream(outToServer);
-    out.writeUTF("Hello from "+testClient.getLocalSocketAddress());
-    testClient.close();
+    try {
+      Socket outSocket = new Socket(ports[0].rd2.processIPAddress,ports[0].rd2.processPortNumber);
+      ObjectOutputStream out = new ObjectOutputStream(outSocket.getOutputStream());
+      ObjectInputStream in = new ObjectInputStream(outSocket.getInputStream());
+      SOSPFPacket packet = new SOSPFPacket(rd.processIPAddress,rd.processPortNumber,rd.simulatedIPAddress,ports[0].rd2.simulatedIPAddress,(short)0);
+      out.writeObject(packet);
+
+      SOSPFPacket packetIn = (SOSPFPacket)in.readObject();
+
+      //set to two way
+      if(packetIn.sospfType==(short)0) {
+        System.out.println("Received HELLO from "+packetIn.srcIP+";\n");
+        System.out.println("set " + ports[0].rd2.simulatedIPAddress + " state to " + RouterStatus.TWO_WAY + ";\n");
+        ports[0].rd1.status = RouterStatus.TWO_WAY;
+        ports[0].rd2.status = RouterStatus.TWO_WAY;
+      }
+
+      //send hello back
+      out.writeObject(packet);
+
+      outSocket.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (Exception e){
+      System.out.println("Error detected during processStart");
+    }
   }
 
   /**

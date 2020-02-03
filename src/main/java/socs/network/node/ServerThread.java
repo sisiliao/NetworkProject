@@ -17,11 +17,12 @@ public class ServerThread implements Runnable{
         try{
             ServerSocket serverSocket = new ServerSocket(router.rd.processPortNumber);
             while(true){
-                System.out.println("Waiting for Client to connect on port" + serverSocket.getLocalPort()+"...");
-                Socket server = serverSocket.accept();
-                System.out.println("Just connected to "+server.getRemoteSocketAddress());
-                DataInputStream in = new DataInputStream(server.getInputStream());
-                System.out.println(in.readUTF());
+//                System.out.println("Waiting for Client to connect on port " + serverSocket.getLocalPort()+"...");
+                Socket newSocket = serverSocket.accept();
+//                System.out.println("Just connected to "+newSocket.getRemoteSocketAddress());
+
+                Thread client = new Thread(new ClientThread(router, newSocket));
+                client.start();
 
             }
         }catch(SocketTimeoutException e){

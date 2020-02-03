@@ -2,11 +2,11 @@ package socs.network.node;
 
 public class Link {
 
-  RouterDescription router1;
-  RouterDescription router2;
+  RouterDescription rd1;
+  RouterDescription rd2;
 
   public Link(RouterDescription r1, RouterDescription r2) {
-    router1 = r1;
-    router2 = r2;
+    rd1 = r1;
+    rd2 = r2;
   }
 }
