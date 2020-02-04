@@ -32,6 +32,25 @@ public class Router {
     processAttach(processIP,processPort,simulatedIP,(short)0);
   }
 
+  public AttachStatus isAttached(String simulatedIP){
+    for (int i=0; i<4; i++){
+      if(ports[i]!=null){
+        if(ports[i].rd2.simulatedIPAddress.equals(simulatedIP)) return AttachStatus.ATTACHED; // Attachment Already exists
+      }
+    }
+    return AttachStatus.NOT_ATTACHED;
+  }
+
+  public int findPort(){
+    for(int i=0; i<4;i++){
+      if(ports[i]==null){
+        return i;
+      }
+    }
+    return -1;
+  }
+
+
   /**
    * output the shortest path to the given destination ip
    * <p/>
@@ -62,12 +81,23 @@ public class Router {
    */
   private void processAttach(String processIP, short processPort,
                              String simulatedIP, short weight) {
-    RouterDescription guestRD = new RouterDescription();
-    guestRD.processIPAddress = processIP;
-    guestRD.processPortNumber = processPort;
-    guestRD.simulatedIPAddress = simulatedIP;
-    Link templink = new Link(this.rd, guestRD);
-    ports[0] = templink;
+    //check if its connected and find a free port, return full if it has no availability
+    if(isAttached(simulatedIP)==AttachStatus.ATTACHED) {
+      System.out.println(simulatedIP + " is already attached.");
+      return;
+    }
+    int availablePort = findPort();
+    if(availablePort==100){
+      System.out.println("All ports are occupied, no available port currently.");
+      return;
+    }else{
+      RouterDescription guestRD = new RouterDescription();
+      guestRD.processIPAddress = processIP;
+      guestRD.processPortNumber = processPort;
+      guestRD.simulatedIPAddress = simulatedIP;
+      Link templink = new Link(this.rd, guestRD);
+      ports[availablePort] = templink;
+    }
 
   }
 
@@ -77,30 +107,37 @@ public class Router {
   private void processStart() {
 
     try {
-      Socket outSocket = new Socket(ports[0].rd2.processIPAddress,ports[0].rd2.processPortNumber);
-      ObjectOutputStream out = new ObjectOutputStream(outSocket.getOutputStream());
-      ObjectInputStream in = new ObjectInputStream(outSocket.getInputStream());
-      SOSPFPacket packet = new SOSPFPacket(rd.processIPAddress,rd.processPortNumber,rd.simulatedIPAddress,ports[0].rd2.simulatedIPAddress,(short)0);
-      out.writeObject(packet);
+      for (int i=0; i<4; i++){
 
-      SOSPFPacket packetIn = (SOSPFPacket)in.readObject();
+        if (ports[i]==null) return;
+        //loop neighbors
+        Socket outSocket = new Socket(ports[i].rd2.processIPAddress,ports[i].rd2.processPortNumber);
+        ObjectOutputStream out = new ObjectOutputStream(outSocket.getOutputStream());
+        ObjectInputStream in = new ObjectInputStream(outSocket.getInputStream());
+        SOSPFPacket packet = new SOSPFPacket(rd.processIPAddress,rd.processPortNumber,rd.simulatedIPAddress,ports[i].rd2.simulatedIPAddress,(short)0);
+        out.writeObject(packet);
 
-      //set to two way
-      if(packetIn.sospfType==(short)0) {
-        System.out.println("Received HELLO from "+packetIn.srcIP+";\n");
-        System.out.println("set " + ports[0].rd2.simulatedIPAddress + " state to " + RouterStatus.TWO_WAY + ";\n");
-        ports[0].rd1.status = RouterStatus.TWO_WAY;
-        ports[0].rd2.status = RouterStatus.TWO_WAY;
+        SOSPFPacket packetIn = (SOSPFPacket)in.readObject();
+
+        //set to two way
+        if(packetIn.sospfType==(short)0) {
+          System.out.println("Received HELLO from "+packetIn.srcIP+";\n");
+          System.out.println("set " + ports[i].rd2.simulatedIPAddress + " state to " + RouterStatus.TWO_WAY + ";\n");
+          ports[i].rd1.status = RouterStatus.TWO_WAY;
+          ports[i].rd2.status = RouterStatus.TWO_WAY;
+        }
+
+        //send hello back
+        out.writeObject(packet);
+
+        outSocket.close();
       }
 
-      //send hello back
-      out.writeObject(packet);
-
-      outSocket.close();
     } catch (IOException e) {
       e.printStackTrace();
     } catch (Exception e){
       System.out.println("Error detected during processStart");
+      e.printStackTrace();
     }
   }
 
@@ -120,7 +157,13 @@ public class Router {
    * output the neighbors of the routers
    */
   private void processNeighbors() {
-
+    System.out.println("IP address of neighbors: ");
+    for(int i=0; i<4; i++){
+      if(ports[i]!=null){
+        System.out.println("Neighbor "+i+": "+ports[i].rd2.simulatedIPAddress);
+      }
+    }
+    System.out.println();
   }
 
   /**
