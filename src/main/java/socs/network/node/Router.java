@@ -202,7 +202,7 @@ public class Router {
           //output neighbors
           processNeighbors();
         } else {
-          //invalid command
+          System.out.println("Invalid command. Please restart program.");
           break;
         }
         System.out.print(">> ");

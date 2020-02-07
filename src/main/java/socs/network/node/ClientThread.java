@@ -47,6 +47,7 @@ public class ClientThread implements Runnable {
                     router1.ports[0].rd2.status = RouterStatus.TWO_WAY;
                 }
                 clientSocket.close();
+                System.out.print(">>");
             }
         } catch (IOException e) {
             e.printStackTrace();
