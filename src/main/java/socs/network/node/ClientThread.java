@@ -1,5 +1,6 @@
 package socs.network.node;
 
+import socs.network.message.LSA;
 import socs.network.message.SOSPFPacket;
 
 import java.io.DataInputStream;
@@ -7,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Vector;
 
 public class ClientThread implements Runnable {
     Router router1;
@@ -27,11 +29,12 @@ public class ClientThread implements Runnable {
             short srcProcessPort = packet.srcProcessPort;
             String srcIP = packet.srcIP;
 
+
             //Receive Hello
             if (packet.sospfType==0){
                 System.out.println("Received HELLO from "+packet.srcIP+";\n");
                 //add link
-                router1.addAttach(srcProcessIP, srcProcessPort, srcIP);
+                router1.addAttach(srcProcessIP, srcProcessPort, srcIP, (short)0);
                 System.out.println("set "+ srcIP +" state to "+RouterStatus.INIT+";\n");
                 router1.ports[0].rd1.status = RouterStatus.INIT;
                 router1.ports[0].rd2.status = RouterStatus.INIT;
@@ -46,8 +49,27 @@ public class ClientThread implements Runnable {
                     router1.ports[0].rd1.status = RouterStatus.TWO_WAY;
                     router1.ports[0].rd2.status = RouterStatus.TWO_WAY;
                 }
+
+                router1.broadcasting(null);
                 clientSocket.close();
                 System.out.print(">>");
+
+            //Receive a LSAUPDATE
+            } else if (packet.sospfType==1){
+                Vector<LSA> lsaArray = packet.lsaArray;
+                LSA newLSA = lsaArray.lastElement();
+                String newLSA_linkStateID = newLSA.linkStateID;
+                int new_seq_no = newLSA.lsaSeqNumber;
+
+                LSA currentLSA = router1.lsd._store.get(newLSA_linkStateID);
+
+                //only update when seq number is greater than current max
+                if(currentLSA == null || new_seq_no > currentLSA.lsaSeqNumber){
+                    router1.lsd._store.put(packet.srcIP, newLSA);
+                    router1.forwarding(packet);
+                }
+
+
             }
         } catch (IOException e) {
             e.printStackTrace();

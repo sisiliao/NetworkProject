@@ -34,6 +34,15 @@ public class SOSPFPacket implements Serializable {
     this.sospfType = sospfType;
   }
 
+  public SOSPFPacket(String srcProcessIP, short srcProcessPort, String srcIP, String dstIP, short sospfType, Vector<LSA> lsaArray) {
+    this.srcProcessIP = srcProcessIP;
+    this.srcProcessPort = srcProcessPort;
+    this.srcIP = srcIP;
+    this.dstIP = dstIP;
+    this.sospfType = sospfType;
+    this.lsaArray = lsaArray;
+  }
+
   public SOSPFPacket(String srcProcessIP, short srcProcessPort, String srcIP, String dstIP, short sospfType, String routerID, String neighborID, Vector<LSA> lsaArray) {
     this.srcProcessIP = srcProcessIP;
     this.srcProcessPort = srcProcessPort;

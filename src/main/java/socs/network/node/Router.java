@@ -1,10 +1,14 @@
 package socs.network.node;
 
+import socs.network.message.LSA;
+import socs.network.message.LinkDescription;
 import socs.network.message.SOSPFPacket;
 import socs.network.util.Configuration;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.Vector;
 
 
 public class Router {
@@ -28,8 +32,8 @@ public class Router {
   }
 
   public void addAttach(String processIP, short processPort,
-                        String simulatedIP){
-    processAttach(processIP,processPort,simulatedIP,(short)0);
+                        String simulatedIP, short weight){
+    processAttach(processIP,processPort,simulatedIP,weight);
   }
 
   public AttachStatus isAttached(String simulatedIP){
@@ -41,6 +45,10 @@ public class Router {
     return AttachStatus.NOT_ATTACHED;
   }
 
+  /***
+   * Find a free port available
+   * @return free port number if any, otherwise -1
+   */
   public int findPort(){
     for(int i=0; i<4;i++){
       if(ports[i]==null){
@@ -48,6 +56,96 @@ public class Router {
       }
     }
     return -1;
+  }
+
+  /***
+   * Create a LSA with latest information about my link status
+   * @return LSA object
+   */
+  private LSA createLSA(){
+    LinkedList<LinkDescription> links = getLinkDescriptionList();
+
+    LSA myLSA = new LSA();
+    myLSA.linkStateID = this.rd.simulatedIPAddress;
+
+    int previousLsaSeqNumber = lsd._store.get(myLSA.linkStateID).lsaSeqNumber;
+    if(previousLsaSeqNumber == Integer.MIN_VALUE) {
+      //Sequence number always starts from 0
+      myLSA.lsaSeqNumber = 0;
+    }else{
+      myLSA.lsaSeqNumber = previousLsaSeqNumber + 1;
+    }
+    myLSA.links = links;
+    return myLSA;
+  }
+
+  private LinkedList<LinkDescription> getLinkDescriptionList(){
+    LinkedList<LinkDescription> links = new LinkedList<LinkDescription>();
+
+    for(int ind=0;ind<4;ind++){
+      if(ports[ind]!=null && ports[ind].rd2.status == RouterStatus.TWO_WAY){
+        LinkDescription ld = new LinkDescription();
+        RouterDescription directNeighbor = ports[ind].rd2;
+        ld.linkID = directNeighbor.simulatedIPAddress;
+        ld.portNum = directNeighbor.processPortNumber;
+        ld.tosMetrics = ports[ind].weight;
+        links.add(ld);
+      }
+    }
+
+    return links;
+  }
+  /***
+   * Broadcast all the new changes to the direct neighbors
+   */
+  public void broadcasting(SOSPFPacket packet){
+    if(packet==null){
+      //broadcast my own link status, not forwarding
+
+      //create a LSA
+      LSA lsa = createLSA();
+      Vector<LSA> vectorLSA = new Vector<LSA>();
+      vectorLSA.add(lsa);
+
+      //add to the Link state database
+      lsd._store.put(lsa.linkStateID, lsa);
+
+      //send LSA
+      for(int i=0; i<4; i++){
+        if(ports[i]!=null){
+          //Forward the packet
+          try {
+            Socket cSocket = new Socket(ports[i].rd2.processIPAddress, ports[i].rd2.processPortNumber);
+            ObjectOutputStream ooStream = new ObjectOutputStream(cSocket.getOutputStream());
+            SOSPFPacket LSAUPDATE = new SOSPFPacket(rd.processIPAddress,rd.processPortNumber,rd.simulatedIPAddress,ports[i].rd2.simulatedIPAddress,(short)1, vectorLSA);
+
+            ooStream.writeObject(LSAUPDATE);
+
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+
+
+    } else {
+      forwarding(packet);
+    }
+  }
+
+  public void forwarding(SOSPFPacket packet){
+    for(int i=0; i<4; i++){
+      if(ports[i]!=null){
+        //Forward the packet
+        try {
+          Socket cSocket = new Socket(ports[i].rd2.processIPAddress, ports[i].rd2.processPortNumber);
+          ObjectOutputStream ooStream = new ObjectOutputStream(cSocket.getOutputStream());
+          ooStream.writeObject(packet);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
   }
 
 
@@ -95,7 +193,7 @@ public class Router {
       guestRD.processIPAddress = processIP;
       guestRD.processPortNumber = processPort;
       guestRD.simulatedIPAddress = simulatedIP;
-      Link templink = new Link(this.rd, guestRD);
+      Link templink = new Link(this.rd, guestRD, weight);
       ports[availablePort] = templink;
     }
 
@@ -129,7 +227,7 @@ public class Router {
 
         //send hello back
         out.writeObject(packet);
-
+        broadcasting(null);
         outSocket.close();
       }
 
@@ -164,6 +262,8 @@ public class Router {
       }
     }
     System.out.println();
+
+    System.out.println(lsd.toString());
   }
 
   /**
