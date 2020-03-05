@@ -4,7 +4,6 @@ import socs.network.message.LSA;
 import socs.network.message.LinkDescription;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 
 public class LinkStateDatabase {
 
@@ -23,8 +22,9 @@ public class LinkStateDatabase {
    * output the shortest path from this router to the destination with the given IP address
    */
   String getShortestPath(String destinationIP) {
-    //TODO: fill the implementation here
-    return null;
+    DijkstraGraph graph = new DijkstraGraph(new HashMap<String, LSA>(_store));
+    DjikstraAlgorithm dijkstra = new DjikstraAlgorithm(graph, rd.simulatedIPAddress);
+    return dijkstra.shortestPath(destinationIP).toString();
   }
 
   //initialize the linkstate database by adding an entry about the router itself

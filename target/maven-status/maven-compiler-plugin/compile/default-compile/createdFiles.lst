@@ -1,10 +1,13 @@
+socs/network/node/DijkstraGraph.class
 socs/network/Main.class
 socs/network/message/SOSPFPacket.class
 socs/network/message/LinkDescription.class
+socs/network/node/DijkstraPath.class
 socs/network/node/RouterDescription.class
 socs/network/message/LSA.class
 socs/network/node/Link.class
 socs/network/node/RouterStatus.class
+socs/network/node/DjikstraAlgorithm.class
 socs/network/node/ClientThread.class
 socs/network/node/LinkStateDatabase.class
 socs/network/node/ServerThread.class
