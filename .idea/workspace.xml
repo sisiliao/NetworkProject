@@ -3,15 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="6b61581d-7734-4d9d-a631-f1cd7c36f036" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/router3.conf" beforeDir="false" afterPath="$PROJECT_DIR$/conf/router3.conf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/router4.conf" beforeDir="false" afterPath="$PROJECT_DIR$/conf/router4.conf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/socs/network/message/SOSPFPacket.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/socs/network/message/SOSPFPacket.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/socs/network/node/ClientThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/socs/network/node/ClientThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/socs/network/node/Router.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/socs/network/node/Router.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/socs/network/node/DjikstraAlgorithm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/socs/network/node/DjikstraAlgorithm.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/COMP535-1.0-SNAPSHOT-jar-with-dependencies.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/COMP535-1.0-SNAPSHOT-jar-with-dependencies.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/socs/network/message/SOSPFPacket.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/socs/network/message/SOSPFPacket.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/socs/network/node/ClientThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/socs/network/node/ClientThread.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/socs/network/node/Router.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/socs/network/node/Router.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/socs/network/node/DjikstraAlgorithm.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/socs/network/node/DjikstraAlgorithm.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -82,13 +76,19 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
   <component name="RunManager" selected="JAR Application.COMP535-1.0-SNAPSHOT-jar-with-dependencies.jar">
-    <configuration default="true" type="Applet">
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration default="true" type="ScalaTestRunConfiguration" factoryName="ScalaTest">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <extension name="scalaCoverage" />
@@ -137,7 +137,7 @@
       <envs />
       <method />
     </configuration>
-    <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android App">
+    <configuration default="true" type="AndroidRunConfigurationType">
       <option name="DEPLOY" value="true" />
       <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
       <option name="DEPLOY_AS_INSTANT" value="false" />
@@ -166,7 +166,7 @@
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests">
+    <configuration default="true" type="AndroidTestRunConfigurationType">
       <option name="TESTING_TYPE" value="0" />
       <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
       <option name="METHOD_NAME" value="" />
@@ -190,6 +190,12 @@
       <method v="2">
         <option name="Make" enabled="true" />
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Applet">
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <method v="2">
+        <option name="Make" enabled="true" />
       </method>
     </configuration>
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
@@ -271,7 +277,7 @@
     </configuration>
     <configuration name="COMP535-1.0-SNAPSHOT-jar-with-dependencies.jar" type="JarApplication" temporary="true">
       <option name="JAR_PATH" value="$PROJECT_DIR$/target/COMP535-1.0-SNAPSHOT-jar-with-dependencies.jar" />
-      <option name="PROGRAM_PARAMETERS" value="conf/router2.conf" />
+      <option name="PROGRAM_PARAMETERS" value="conf/router3.conf" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <method v="2" />
     </configuration>
@@ -501,10 +507,13 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/socs/network/node/ClientThread.java</url>
-          <line>58</line>
-          <option name="timeStamp" value="10" />
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/socs/network/node/DjikstraAlgorithm.java</url>
+          <line>12</line>
+          <properties class="socs.network.node.DjikstraAlgorithm" method="&lt;init&gt;">
+            <option name="EMULATED" value="true" />
+          </properties>
+          <option name="timeStamp" value="14" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
