@@ -79,7 +79,7 @@ public class Router {
     return myLSA;
   }
 
-  private LinkedList<LinkDescription> getLinkDescriptionList(){
+  public LinkedList<LinkDescription> getLinkDescriptionList(){
     LinkedList<LinkDescription> links = new LinkedList<LinkDescription>();
 
     for(int ind=0;ind<4;ind++){
@@ -109,7 +109,7 @@ public class Router {
 
       //add to the Link state database
       lsd._store.put(lsa.linkStateID, lsa);
-
+      //System.out.println(lsd.toString());
       //send LSA
       for(int i=0; i<4; i++){
         if(ports[i]!=null){
@@ -120,6 +120,8 @@ public class Router {
             SOSPFPacket LSAUPDATE = new SOSPFPacket(rd.processIPAddress,rd.processPortNumber,rd.simulatedIPAddress,ports[i].rd2.simulatedIPAddress,(short)1, vectorLSA);
 
             ooStream.writeObject(LSAUPDATE);
+
+            //System.out.println(LSAUPDATE.toString());
 
           } catch (IOException e) {
             e.printStackTrace();

@@ -1,6 +1,7 @@
 package socs.network.node;
 
 import socs.network.message.LSA;
+import socs.network.message.LinkDescription;
 import socs.network.message.SOSPFPacket;
 
 import java.io.DataInputStream;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.LinkedList;
 import java.util.Vector;
 
 public class ClientThread implements Runnable {
@@ -34,7 +36,7 @@ public class ClientThread implements Runnable {
             if (packet.sospfType==0){
                 System.out.println("Received HELLO from "+packet.srcIP+";\n");
                 //add link
-                router1.addAttach(srcProcessIP, srcProcessPort, srcIP, (short)0);
+                router1.addAttach(srcProcessIP, srcProcessPort, srcIP, Short.MIN_VALUE);
                 System.out.println("set "+ srcIP +" state to "+RouterStatus.INIT+";\n");
                 router1.ports[0].rd1.status = RouterStatus.INIT;
                 router1.ports[0].rd2.status = RouterStatus.INIT;
@@ -50,12 +52,12 @@ public class ClientThread implements Runnable {
                     router1.ports[0].rd2.status = RouterStatus.TWO_WAY;
                 }
 
-                router1.broadcasting(null);
                 clientSocket.close();
                 System.out.print(">>");
 
             //Receive a LSAUPDATE
             } else if (packet.sospfType==1){
+
                 Vector<LSA> lsaArray = packet.lsaArray;
                 LSA newLSA = lsaArray.lastElement();
                 String newLSA_linkStateID = newLSA.linkStateID;
@@ -66,8 +68,66 @@ public class ClientThread implements Runnable {
                 //only update when seq number is greater than current max
                 if(currentLSA == null || new_seq_no > currentLSA.lsaSeqNumber){
                     router1.lsd._store.put(packet.srcIP, newLSA);
+
+                    //if these 2 routers are neighbors, add the LSA to the receiver's lsd
+                    for(Link l: router1.ports){
+                        if(l!=null && l.rd2.simulatedIPAddress.equals(packet.srcIP)){
+                            LinkedList<LinkDescription> linkList = newLSA.links;
+                            for(LinkDescription ld : linkList){
+                                if (ld.linkID.equals(router1.rd.simulatedIPAddress) && l.weight !=  (short) ld.tosMetrics) {
+                                    l.weight = (short) ld.tosMetrics;
+
+                                    LSA myOwnLSA = router1.lsd._store.get(router1.rd.simulatedIPAddress);
+                                    myOwnLSA.links = router1.getLinkDescriptionList();
+                                    router1.lsd._store.put(router1.rd.simulatedIPAddress, myOwnLSA);
+
+                                    router1.broadcasting(null);
+                                    break;
+                                }
+                            }
+
+
+                        }
+                    }
+
+
                     router1.forwarding(packet);
                 }
+
+//
+//                LSA newLSA = packet.lsaArray.lastElement();
+//                LSA currentLSA = router1.lsd._store.get(packet.srcIP);
+//
+//                if(currentLSA==null || newLSA.lsaSeqNumber > currentLSA.lsaSeqNumber){
+//                    //Check if the srcIP is a direct neighbor with this router
+//                    boolean directNeighbor = false;
+//                    int linkPort = -1000;
+//
+//                    for(int i=0;i<4;i++){
+//                        if(router1.ports[i]!=null && router1.ports[i].rd2.simulatedIPAddress.equals(packet.srcIP)){
+//                            directNeighbor = true;
+//                            linkPort = i;
+//                        }
+//                    }
+//
+//                    //update link in ports
+//                    if(directNeighbor){
+//                        LinkedList<LinkDescription> ld_list = packet.lsaArray.lastElement().links;
+//                        LinkDescription ld_updating = null;
+//                        for(LinkDescription ld : ld_list){
+//                            if(ld.linkID.equals(router1.rd.simulatedIPAddress)){
+//                                ld_updating = ld;
+//                                break;
+//                            }
+//                        }
+//
+//                        if(ld_updating!=null){
+//                            if(ld_updating!=router1.ports[linkPort].weight && link)
+//                        }
+//                    }
+//                }
+
+
 
 
             }

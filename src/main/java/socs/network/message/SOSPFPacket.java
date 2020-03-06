@@ -53,4 +53,18 @@ public class SOSPFPacket implements Serializable {
     this.neighborID = neighborID;
     this.lsaArray = lsaArray;
   }
+
+  @Override
+  public String toString() {
+    return "SOSPFPacket{" +
+            "srcProcessIP='" + srcProcessIP + '\'' +
+            ", srcProcessPort=" + srcProcessPort +
+            ", srcIP='" + srcIP + '\'' +
+            ", dstIP='" + dstIP + '\'' +
+            ", sospfType=" + sospfType +
+            ", routerID='" + routerID + '\'' +
+            ", neighborID='" + neighborID + '\'' +
+            ", lsaArray=" + lsaArray +
+            '}';
+  }
 }
