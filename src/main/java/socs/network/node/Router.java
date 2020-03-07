@@ -31,9 +31,9 @@ public class Router {
     rd.status = rs;
   }
 
-  public void addAttach(String processIP, short processPort,
+  public int addAttach(String processIP, short processPort,
                         String simulatedIP, short weight){
-    processAttach(processIP,processPort,simulatedIP,weight);
+    return processAttach(processIP,processPort,simulatedIP,weight);
   }
 
   public AttachStatus isAttached(String simulatedIP){
@@ -64,6 +64,11 @@ public class Router {
    */
   private LSA createLSA(){
     LinkedList<LinkDescription> links = getLinkDescriptionList();
+
+//    System.out.println("Print getLinkDescriptionList information for "+ rd.simulatedIPAddress);
+//    for(LinkDescription p : links){
+//      if(p!=null)System.out.println(p.toString());
+//    }
 
     LSA myLSA = new LSA();
     myLSA.linkStateID = this.rd.simulatedIPAddress;
@@ -179,17 +184,19 @@ public class Router {
    * <p/>
    * NOTE: this command should not trigger link database synchronization
    */
-  private void processAttach(String processIP, short processPort,
+  private int processAttach(String processIP, short processPort,
                              String simulatedIP, short weight) {
     //check if its connected and find a free port, return full if it has no availability
     if(isAttached(simulatedIP)==AttachStatus.ATTACHED) {
-      System.out.println(simulatedIP + " is already attached.");
-      return;
+//      System.out.println("This router is already attached.");
+      for(int i=0; i<4;i++){
+        if(ports[i].rd2.simulatedIPAddress.equals(simulatedIP))return i;
+      }
     }
     int availablePort = findPort();
     if(availablePort==100){
       System.out.println("All ports are occupied, no available port currently.");
-      return;
+      return -1;
     }else{
       RouterDescription guestRD = new RouterDescription();
       guestRD.processIPAddress = processIP;
@@ -198,6 +205,7 @@ public class Router {
       Link templink = new Link(this.rd, guestRD, weight);
       ports[availablePort] = templink;
     }
+    return availablePort;
 
   }
 
