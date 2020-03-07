@@ -10,14 +10,13 @@ public class DjikstraAlgorithm {
     private Map<String, String> parentChild;
     private Map<String, Integer> distances;
 
-    public DjikstraAlgorithm(DijkstraGraph pGraph, String pSrc) {
-        this.graph = pGraph;
-        this.source = pSrc;
+    public DjikstraAlgorithm(DijkstraGraph grph, String src) {
+        this.graph = grph;
+        this.source = src;
         this.parentChild = new HashMap<String, String>();
         this.distances = new HashMap<String, Integer>();
 
         String curr, child;
-        int min = Integer.MAX_VALUE;
         curr = source;
 
         Set<String> nodes = new HashSet<String>(graph.getNodes());
@@ -39,10 +38,11 @@ public class DjikstraAlgorithm {
                         }
                     }
                 }
-                for (Map.Entry<String, Integer> entry : distSet) {
-                    if (entry.getValue() < min && nodes.contains(entry.getKey())) {
-                        min = entry.getValue();
-                        curr = entry.getKey();
+                int min = Integer.MAX_VALUE;
+                for (Map.Entry<String, Integer> d : distSet) {
+                    if (d.getValue() < min && nodes.contains(d.getKey())) {
+                        min = d.getValue();
+                        curr = d.getKey();
                     }
                 }
             } else break;
