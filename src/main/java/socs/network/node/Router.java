@@ -133,8 +133,6 @@ public class Router {
           }
         }
       }
-
-
     } else {
       forwarding(packet);
     }
@@ -273,7 +271,7 @@ public class Router {
     }
     System.out.println();
 
-    System.out.println(lsd.toString());
+//    System.out.println(lsd.toString());
   }
 
   /**

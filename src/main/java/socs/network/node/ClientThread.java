@@ -4,7 +4,6 @@ import socs.network.message.LSA;
 import socs.network.message.LinkDescription;
 import socs.network.message.SOSPFPacket;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -15,7 +14,6 @@ import java.util.Vector;
 public class ClientThread implements Runnable {
     Router router1;
     Socket clientSocket;
-
 
     public ClientThread(Router router1, Socket clientSocket) {
         this.router1 = router1;
@@ -32,7 +30,6 @@ public class ClientThread implements Runnable {
             short srcProcessPort = packet.srcProcessPort;
             String srcIP = packet.srcIP;
 
-
             //Receive Hello
             if (packet.sospfType==0){
                 System.out.println("Received HELLO from "+packet.srcIP+";\n");
@@ -41,7 +38,6 @@ public class ClientThread implements Runnable {
 
                 System.out.println("set "+ srcIP +" state to "+RouterStatus.INIT+";\n");
 
-                int newPort = router1.findPort();
                 router1.ports[availablePort].rd1.status = RouterStatus.INIT;
                 router1.ports[availablePort].rd2.status = RouterStatus.INIT;
 
@@ -94,74 +90,11 @@ public class ClientThread implements Runnable {
                                     break;
                                 }
                             }
-
-
                         }
                     }
-
                     router1.lsd._store.put(packet.srcIP, newLSA);
                     router1.forwarding(packet);
-
-
                 }
-
-
-//                LSA newLSA = packet.lsaArray.lastElement();
-//                LSA currentLSA = router1.lsd._store.get(packet.srcIP);
-//                boolean newRouter = false;
-//
-//                if(currentLSA==null || newLSA.lsaSeqNumber > currentLSA.lsaSeqNumber){
-//                    //Check if the srcIP is a direct neighbor with this router
-//                    boolean directNeighbor = false;
-//                    int linkPort = -1000;
-//                    newRouter = currentLSA == null;
-//
-//                    for(int i=0;i<4;i++){
-//                        if(router1.ports[i]!=null && router1.ports[i].rd2.simulatedIPAddress.equals(packet.srcIP)){
-//                            directNeighbor = true;
-//                            linkPort = i;
-//                        }
-//                    }
-//
-//                    //update link in ports
-//                    if(directNeighbor){
-//                        LinkedList<LinkDescription> ld_list = packet.lsaArray.lastElement().links;
-//                        LinkDescription ld_updating = null;
-//                        for(LinkDescription ld : ld_list){
-//                            if(ld.linkID.equals(router1.rd.simulatedIPAddress)){
-//                                ld_updating = ld;
-//                                break;
-//                            }
-//                        }
-//
-//                        if(ld_updating!=null){
-//                            if(ld_updating.tosMetrics!=(short)router1.ports[linkPort].weight && ld_updating.tosMetrics>-1){
-//                                router1.ports[linkPort].weight = (short)ld_updating.tosMetrics;
-//
-//                                LSA myOwnLSA = router1.lsd._store.get(router1.rd.simulatedIPAddress);
-//                                myOwnLSA.links = router1.getLinkDescriptionList();
-//                                router1.lsd._store.put(router1.rd.simulatedIPAddress, myOwnLSA);
-//                                router1.broadcasting(null);
-//
-//                            }
-//                        }
-//                    }
-//
-//                    router1.lsd._store.put(packet.srcIP, newLSA);
-//                    for(int i=0; i<4; i++){
-//                        if(router1.ports[i]!=null && !router1.ports[i].rd2.simulatedIPAddress.equals(packet.srcIP)){
-//                            router1.broadcasting(packet);
-//                        }
-//
-//                        if(newRouter){
-//                            router1.broadcasting(null);
-//                        }
-//                    }
-//                }
-
-
-
-
             }
         } catch (IOException e) {
             e.printStackTrace();
