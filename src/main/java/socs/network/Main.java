@@ -18,8 +18,11 @@ public class Main {
       System.exit(1);
     }
     Router r = new Router(new Configuration(args[0]));
-    Thread server = new Thread(new ServerThread(r));
+    ServerThread serverThreadInstance = new ServerThread(r);
+    Thread server = new Thread(serverThreadInstance);
     server.start();
+    r.setServerThread(server);
+    r.setServerThreadInstance(serverThreadInstance);
 
 //    Socket testClient = new Socket("0.0.0.0",20000);
 //    OutputStream outToServer = testClient.getOutputStream();

@@ -7,13 +7,15 @@ import socs.network.util.Configuration;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.LinkedList;
-import java.util.Vector;
+import java.util.*;
 
 
 public class Router {
 
   protected LinkStateDatabase lsd;
+  private boolean started = false;
+  private Thread serverThread;
+  private ServerThread serverThreadInstance;
 
   RouterDescription rd = new RouterDescription();
 
@@ -24,6 +26,18 @@ public class Router {
     rd.simulatedIPAddress = config.getString("socs.network.router.ip");
     rd.processPortNumber = config.getShort("socs.network.router.port");
     lsd = new LinkStateDatabase(rd);
+  }
+
+  public void setServerThread(Thread serverThread) {
+    this.serverThread = serverThread;
+  }
+
+  public void setServerThreadInstance(ServerThread serverThreadInstance) {
+    this.serverThreadInstance = serverThreadInstance;
+  }
+
+  public RouterDescription getRouterDescription() {
+    return rd;
   }
 
   public void setRouterStatus(RouterStatus rs){
@@ -172,7 +186,81 @@ public class Router {
    * @param portNumber the port number which the link attaches at
    */
   private void processDisconnect(short portNumber) {
+    if (portNumber >= 0 && portNumber < 4 && ports[portNumber] != null) {
 
+      LSA lsa = lsd._store.get(rd.simulatedIPAddress);
+      LinkedList<LinkDescription> allLinks = lsa.links;
+      LSA neighbor;
+
+      for (LinkDescription desc: allLinks) {
+        if (desc.portNum == portNumber) {
+          lsa.links.remove(desc);
+          lsa.lsaSeqNumber++;
+          neighbor = lsd._store.get(desc.linkID);
+          neighbor.lsaSeqNumber++;
+          break;
+        }
+      }
+
+      RouterDescription toBeDisconnected = new RouterDescription();
+      System.out.println(ports);
+      toBeDisconnected.processIPAddress = ports[portNumber].rd2.processIPAddress;
+      toBeDisconnected.simulatedIPAddress = ports[portNumber].rd2.simulatedIPAddress;
+      toBeDisconnected.processPortNumber = ports[portNumber].rd2.processPortNumber;
+
+      ports[portNumber] = null;
+
+      DijkstraGraph graph = new DijkstraGraph(new HashMap<String, LSA>(lsd._store));
+      DjikstraAlgorithm runDijkstra = new DjikstraAlgorithm(graph, rd.simulatedIPAddress);
+      Set<String> allReachable = new HashSet<String>(runDijkstra.getDistances().keySet());
+      Set<String> linkIds = new HashSet<String>(lsd._store.keySet());
+
+      for (String id: linkIds) {
+        if (!allReachable.contains(id))
+          lsd._store.remove(id);
+      }
+
+      boolean packetSent = false;
+      SOSPFPacket packet = new SOSPFPacket(this, toBeDisconnected, new Vector<LSA>(lsd._store.values()), (short)1);
+      SOSPFPacket packet2;
+      packetSent = send(packet, toBeDisconnected);
+      if (!packetSent) {
+        System.out.println("Packet was not successfully sent.");
+      }
+
+      RouterDescription destination = new RouterDescription();
+      for (int i=0; i<4; i++) {
+        if (ports[i]!=null) {
+          packet2 = new SOSPFPacket(this, toBeDisconnected, new Vector<LSA>(lsd._store.values()), (short)1);
+          destination.processPortNumber = portNumber;
+          destination.simulatedIPAddress = ports[i].rd2.simulatedIPAddress;
+          destination.processIPAddress = ports[i].rd2.processIPAddress;
+          packetSent = send(packet2, destination);
+          if (!packetSent) {
+            System.out.println("Packet was not successfully sent.");
+          }
+        }
+      }
+    } else {
+      System.out.println("Enter a valid port number.");
+    }
+  }
+
+  public synchronized boolean send(SOSPFPacket packet, RouterDescription destination) {
+    try {
+      Socket socket = new Socket(destination.processIPAddress, destination.processPortNumber);
+      OutputStream os = socket.getOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(os);
+
+      oos.writeObject(packet);
+
+      oos.close();
+      socket.close();
+      return true;
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return false;
   }
 
   /**
@@ -188,7 +276,7 @@ public class Router {
     if(isAttached(simulatedIP)==AttachStatus.ATTACHED) {
 //      System.out.println("This router is already attached.");
       for(int i=0; i<4;i++){
-        if(ports[i].rd2.simulatedIPAddress.equals(simulatedIP))return i;
+        if(ports[i].rd2.simulatedIPAddress.equals(simulatedIP)) return i;
       }
     }
     int availablePort = findPort();
@@ -237,6 +325,7 @@ public class Router {
         out.writeObject(packet);
         broadcasting(null);
         outSocket.close();
+        this.started = true;
       }
 
     } catch (IOException e) {
@@ -249,14 +338,23 @@ public class Router {
 
   /**
    * attach the link to the remote router, which is identified by the given simulated ip;
-   * to establish the connection via socket, you need to indentify the process IP and process Port;
+   * to establish the connection via socket, you need to identify the process IP and process Port;
    * additionally, weight is the cost to transmitting data through the link
    * <p/>
    * This command does trigger the link database synchronization
    */
-  private void processConnect(String processIP, short processPort,
+  private int processConnect(String processIP, short processPort,
                               String simulatedIP, short weight) {
-
+    if (this.started) {
+      int newPort = processAttach(processIP, processPort, simulatedIP, weight);
+      if (newPort == -1) {
+        return -1;
+      } else {
+        processStart();
+      }
+      return newPort;
+    }
+    return -1;
   }
 
   /**
@@ -278,7 +376,16 @@ public class Router {
    * disconnect with all neighbors and quit the program
    */
   private void processQuit() {
-
+    for (int i=0; i<4; i++) {
+      if (ports[i]!=null) {
+        processDisconnect((short) i);
+      }
+    }
+    serverThreadInstance.closeAll();
+    if (serverThread!=null) {
+      serverThread.interrupt();
+    }
+    System.exit(0);
   }
 
   public void terminal() {
@@ -302,7 +409,7 @@ public class Router {
                   cmdLine[3], Short.parseShort(cmdLine[4]));
         } else if (command.equals("start")) {
           processStart();
-        } else if (command.equals("connect ")) {
+        } else if (command.startsWith("connect ")) {
           String[] cmdLine = command.split(" ");
           processConnect(cmdLine[1], Short.parseShort(cmdLine[2]),
                   cmdLine[3], Short.parseShort(cmdLine[4]));

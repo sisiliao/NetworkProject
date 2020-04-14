@@ -64,4 +64,8 @@ public class DjikstraAlgorithm {
         }
         return pathFound;
     }
+
+    public Map<String, Integer> getDistances() {
+        return distances;
+    }
 }

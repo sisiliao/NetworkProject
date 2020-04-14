@@ -1,5 +1,8 @@
 package socs.network.message;
 
+import socs.network.node.Router;
+import socs.network.node.RouterDescription;
+
 import java.io.*;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,6 +54,15 @@ public class SOSPFPacket implements Serializable {
     this.sospfType = sospfType;
     this.routerID = routerID;
     this.neighborID = neighborID;
+    this.lsaArray = lsaArray;
+  }
+
+  public SOSPFPacket(Router r, RouterDescription rd, Vector<LSA> lsaArray, short sospfType) {
+    this.srcIP = r.getRouterDescription().getSimulatedIPAddress();
+    this.srcProcessIP = r.getRouterDescription().getProcessIPAddress();
+    this.srcProcessPort = r.getRouterDescription().getProcessPortNumber();
+    this.dstIP = rd.getSimulatedIPAddress();
+    this.sospfType = sospfType;
     this.lsaArray = lsaArray;
   }
 
